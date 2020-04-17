@@ -79,6 +79,25 @@ const invokeChaincode = async function(peerNames, channelName, chaincodeName, fc
 				proposalResponses[0].response.status, proposalResponses[0].response.message,
 				proposalResponses[0].response.payload, proposalResponses[0].endorsement.signature));
 
+			let data;
+			try {
+				if (proposalResponses[0].response.payload) {
+					data = JSON.parse(proposalResponses[0].response.payload);
+				} else {
+					data = proposalResponses[0].response.message;
+				}
+			} catch (e) {
+				data = proposalResponses[0].response.payload.toString();
+			}
+			
+
+			if (Array.isArray(data)) {
+				responses = data;
+			} else {
+				responses.push(data);
+			}
+	
+
 			// wait for the channel-based event hub to tell us
 			// that the commit was good or bad on each peer in our organization
 			const promises = [];
