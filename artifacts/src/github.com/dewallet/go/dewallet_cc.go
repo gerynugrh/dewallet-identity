@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	pb "github.com/hyperledger/fabric/protos/peer"
@@ -27,6 +28,26 @@ type Identity struct {
 func (t *DewalletChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 	logger.Info("Initialize Dewallet Chaincode")
 	return shim.Success(nil)
+}
+
+// Invoke will run the approriate function based on argument
+func (t *DewalletChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
+	logger.Info("Invoking Dewallet Chaincode")
+
+	function, args := stub.GetFunctionAndParameters()
+
+	if function == "Register" {
+		// Deletes an entity from its state
+		return t.Register(stub, args)
+	}
+
+	if function == "GetPublicKey" {
+		// queries an entity state
+		return t.GetPublicKey(stub, args)
+	}
+
+	logger.Errorf("Unknown action, check the first argument, must be one of 'Register', 'GetPublicKey'. But got: %v", args[0])
+	return shim.Error(fmt.Sprintf("Unknown action, check the first argument, must be one of 'Register', 'GetPublicKey'. But got: %v", args[0]))
 }
 
 // Register will add the user identity into blockchain
