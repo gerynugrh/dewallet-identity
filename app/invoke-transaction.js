@@ -24,6 +24,8 @@ const invokeChaincode = async function(peerNames, channelName, chaincodeName, fc
 	let tx_id_string = null;
 	let client = null;
 	let channel = null;
+	let responses = null;
+
 	try {
 		// first setup the client for this org
 		client = await helper.getClientForOrg(org_name, username);
@@ -196,7 +198,8 @@ const invokeChaincode = async function(peerNames, channelName, chaincodeName, fc
 	// build a response to send back to the REST caller
 	const response = {
 		success: success,
-		message: message
+		message: message,
+		responses: responses,
 	};
 	return response;
 };
