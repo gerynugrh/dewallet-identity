@@ -177,7 +177,8 @@ curl -s -X POST \
   -d "{
 	\"chaincodeName\":\"dewallet\",
 	\"chaincodeVersion\":\"v0\",
-	\"chaincodeType\": \"$LANGUAGE\"
+	\"chaincodeType\": \"$LANGUAGE\",
+  \"args\": []
 }"
 echo
 echo
