@@ -24,7 +24,7 @@ const invokeChaincode = async function(peerNames, channelName, chaincodeName, fc
 	let tx_id_string = null;
 	let client = null;
 	let channel = null;
-	let responses = null;
+	let responses = [];
 
 	try {
 		// first setup the client for this org
