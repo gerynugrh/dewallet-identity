@@ -81,7 +81,7 @@ curl -s -X POST \
   -H "content-type: application/json" \
   -d '{
 	"peers": ["peer1", "peer2"],
-	"chaincodeName":"mycc",
+	"chaincodeName":"dewallet",
 	"chaincodePath":"github.com/example_cc/go",
 	"chaincodeVersion":"v0"
 }'
@@ -97,7 +97,7 @@ curl -s -X POST \
   -H "content-type: application/json" \
   -d '{
 	"peers": ["peer1","peer2"],
-	"chaincodeName":"mycc",
+	"chaincodeName":"dewallet",
 	"chaincodePath":"github.com/example_cc/go",
 	"chaincodeVersion":"v0"
 }'
@@ -111,7 +111,7 @@ curl -s -X POST \
   -H "authorization: Bearer $ORG1_TOKEN" \
   -H "content-type: application/json" \
   -d '{
-	"chaincodeName":"mycc",
+	"chaincodeName":"dewallet",
 	"chaincodeVersion":"v0",
 	"args":["a","100","b","200"]
 }'
@@ -121,7 +121,7 @@ echo
 echo "POST invoke chaincode on peers of Org1 and Org2"
 echo
 TRX_ID=$(curl -s -X POST \
-  http://localhost:4000/channels/mychannel/chaincodes/mycc \
+  http://localhost:4000/channels/mychannel/chaincodes/dewallet \
   -H "authorization: Bearer $ORG1_TOKEN" \
   -H "content-type: application/json" \
   -d '{
@@ -135,7 +135,7 @@ echo
 echo "GET query chaincode on peer1 of Org1"
 echo
 curl -s -X GET \
-  "http://localhost:4000/channels/mychannel/chaincodes/mycc?peer=peer1&fcn=query&args=%5B%22a%22%5D" \
+  "http://localhost:4000/channels/mychannel/chaincodes/dewallet?peer=peer1&fcn=query&args=%5B%22a%22%5D" \
   -H "authorization: Bearer $ORG1_TOKEN" \
   -H "content-type: application/json"
 echo

@@ -149,7 +149,7 @@ curl -s -X POST \
   -H "content-type: application/json" \
   -d '{
 	"peers": ["peer0.org1.example.com","peer1.org1.example.com"],
-	"chaincodeName":"mycc",
+	"chaincodeName":"dewallet",
 	"chaincodePath":"github.com/example_cc/go",
 	"chaincodeType": "golang",
 	"chaincodeVersion":"v0"
@@ -164,7 +164,7 @@ curl -s -X POST \
   -H "content-type: application/json" \
   -d '{
 	"peers": ["peer0.org1.example.com","peer1.org1.example.com"],
-	"chaincodeName":"mycc",
+	"chaincodeName":"dewallet",
 	"chaincodePath":"$PWD/artifacts/src/github.com/example_cc/node",
 	"chaincodeType": "node",
 	"chaincodeVersion":"v0"
@@ -207,7 +207,7 @@ curl -s -X POST \
   -H "authorization: Bearer <put JSON Web Token here>" \
   -H "content-type: application/json" \
   -d '{
-	"chaincodeName":"mycc",
+	"chaincodeName":"dewallet",
 	"chaincodeVersion":"v0",
 	"chaincodeType": "golang",
 	"args":["a","100","b","200"]
@@ -220,7 +220,7 @@ curl -s -X POST \
 This invoke request is signed by peers from both orgs, *org1* & *org2*.
 ```
 curl -s -X POST \
-  http://localhost:4000/channels/mychannel/chaincodes/mycc \
+  http://localhost:4000/channels/mychannel/chaincodes/dewallet \
   -H "authorization: Bearer <put JSON Web Token here>" \
   -H "content-type: application/json" \
   -d '{
@@ -235,7 +235,7 @@ curl -s -X POST \
 
 ```
 curl -s -X GET \
-  "http://localhost:4000/channels/mychannel/chaincodes/mycc?peer=peer0.org1.example.com&fcn=query&args=%5B%22a%22%5D" \
+  "http://localhost:4000/channels/mychannel/chaincodes/dewallet?peer=peer0.org1.example.com&fcn=query&args=%5B%22a%22%5D" \
   -H "authorization: Bearer <put JSON Web Token here>" \
   -H "content-type: application/json"
 ```
