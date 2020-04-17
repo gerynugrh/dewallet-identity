@@ -101,3 +101,10 @@ func (t *DewalletChaincode) GetPublicKey(stub shim.ChaincodeStubInterface, args 
 
 	return shim.Success(resBytes)
 }
+
+func main() {
+	err := shim.Start(new(DewalletChaincode))
+	if err != nil {
+		logger.Errorf("Error starting Dewallet chaincode: %s", err)
+	}
+}
