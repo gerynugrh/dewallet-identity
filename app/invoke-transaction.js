@@ -195,6 +195,10 @@ const invokeChaincode = async function(peerNames, channelName, chaincodeName, fc
 		logger.info(message);
 	}
 
+	if (responses.length() == 1) {
+		responses = responses[0]
+	}
+
 	// build a response to send back to the REST caller
 	const response = {
 		success: success,
