@@ -183,45 +183,4 @@ curl -s -X POST \
 echo
 echo
 
-echo "POST invoke Register on chaincode on peers of Org1 and Org2"
-echo
-VALUES=$(curl -s -X POST \
-  http://localhost:4000/channels/mychannel/chaincodes/dewallet \
-  -H "authorization: Bearer $ORG1_TOKEN" \
-  -H "content-type: application/json" \
-  -d "{
-  \"peers\": [\"peer0.org1.example.com\",\"peer0.org2.example.com\"],
-  \"fcn\":\"Register\",
-  \"args\":[\"{
-    \"username\": \"test\",
-    \"publicKey\": \"test\",
-    \"data\": \"test\",
-    \"verified\": \"false\"
-  }\"]
-}")
-echo $VALUES
-# Assign previous invoke transaction id  to TRX_ID
-MESSAGE=$(echo $VALUES | jq -r ".message")
-TRX_ID=${MESSAGE#*ID: }
-echo
-
-echo "POST invoke GetPublicKey on chaincode on peers of Org1 and Org2"
-echo
-VALUES=$(curl -s -X POST \
-  http://localhost:4000/channels/mychannel/chaincodes/dewallet \
-  -H "authorization: Bearer $ORG1_TOKEN" \
-  -H "content-type: application/json" \
-  -d "{
-  \"peers\": [\"peer0.org1.example.com\",\"peer0.org2.example.com\"],
-  \"fcn\":\"GetPublicKey\",
-  \"args\":[\"{
-    \"username\": \"test\",
-  }\"]
-}")
-echo $VALUES
-# Assign previous invoke transaction id  to TRX_ID
-MESSAGE=$(echo $VALUES | jq -r ".message")
-TRX_ID=${MESSAGE#*ID: }
-echo
-
 echo "Total execution time : $(($(date +%s)-starttime)) secs ..."
