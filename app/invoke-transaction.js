@@ -199,7 +199,7 @@ const invokeChaincode = async function(peerNames, channelName, chaincodeName, fc
 	const response = {
 		success: success,
 		message: message,
-		responses: responses,
+		data: responses,
 	};
 	return response;
 };
