@@ -195,7 +195,7 @@ const invokeChaincode = async function(peerNames, channelName, chaincodeName, fc
 		logger.info(message);
 	}
 
-	if (responses.length() == 1) {
+	if (responses.length == 1) {
 		responses = responses[0]
 	}
 
