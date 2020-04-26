@@ -46,6 +46,10 @@ func (t *DewalletChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response
 		return t.GetPublicKey(stub, args)
 	}
 
+	if function == "GetUserData" {
+		return t.GetUserData(stub, args)
+	}
+
 	logger.Errorf("Unknown action, check the first argument, must be one of 'Register', 'GetPublicKey'. But got: %v", args[0])
 	return shim.Error(fmt.Sprintf("Unknown action, check the first argument, must be one of 'Register', 'GetPublicKey'. But got: %v", args[0]))
 }
@@ -95,6 +99,42 @@ func (t *DewalletChaincode) GetPublicKey(stub shim.ChaincodeStubInterface, args 
 
 	res := getPublicKeyResponse{
 		PublicKey: i.PublicKey,
+	}
+
+	resBytes, _ := json.Marshal(res)
+
+	return shim.Success(resBytes)
+}
+
+type getUserDataRequest struct {
+	Username string `json:"username"`
+}
+
+type getUserDataResponse struct {
+	Data string `json:"data"`
+}
+
+// GetUserData will query the blockchain
+// and return encrypted data of a user
+func (t *DewalletChaincode) GetUserData(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	logger.Info("Querying a user data")
+
+	var req getUserDataRequest
+	json.Unmarshal([]byte(args[0]), &req)
+
+	iBytes, err := stub.GetState(req.Username)
+	if err != nil {
+		return shim.Error("Failed to get state")
+	}
+	if iBytes == nil {
+		return shim.Error("Username not found")
+	}
+
+	var i Identity
+	json.Unmarshal([]byte(iBytes), &i)
+
+	res := getUserDataResponse{
+		Data: i.data,
 	}
 
 	resBytes, _ := json.Marshal(res)
