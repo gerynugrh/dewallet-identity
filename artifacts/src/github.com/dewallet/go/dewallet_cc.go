@@ -134,7 +134,7 @@ func (t *DewalletChaincode) GetUserData(stub shim.ChaincodeStubInterface, args [
 	json.Unmarshal([]byte(iBytes), &i)
 
 	res := getUserDataResponse{
-		Data: i.data,
+		Data: i.Data,
 	}
 
 	resBytes, _ := json.Marshal(res)
