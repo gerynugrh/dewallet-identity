@@ -53,6 +53,10 @@ func (t *DewalletChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response
 		return t.UpdateUserData(stub, args)
 	}
 
+	if function == "AddKey" {
+		return t.AddKey(stub, args)
+	}
+
 	if function == "GetPublicKey" {
 		// queries an entity state
 		return t.GetPublicKey(stub, args)
@@ -130,6 +134,7 @@ type addKeyResponse struct {
 	Key string `json:"key"`
 }
 
+// AddKey will add symetric key to blockchain
 func (t *DewalletChaincode) AddKey(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	logger.Info("Adding decryption key of user data")
 
