@@ -77,6 +77,8 @@ func (t *DewalletChaincode) Register(stub shim.ChaincodeStubInterface, args []st
 	var i Identity
 	json.Unmarshal([]byte(args[0]), &i)
 
+	i.Keys = []Key{}
+
 	iBytes, _ := json.Marshal(i)
 	err := stub.PutState(i.Username, iBytes)
 	if err != nil {
