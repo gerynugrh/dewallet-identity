@@ -22,6 +22,14 @@ type Identity struct {
 	PublicKey string `json:"publicKey"`
 	Data      string `json:"data"`
 	Verified  string `json:"verified"`
+	Keys []Key `json:"keys"`
+}
+
+// Key save the association between allowed user's username
+// and encrypted key that can be used to decrypt the user data
+type Key struct {
+	For string `json:"for"`
+	Key string `json:"key"`
 }
 
 // Init will initialize the chaincode
@@ -111,6 +119,56 @@ func (t *DewalletChaincode) UpdateUserData(stub shim.ChaincodeStubInterface, arg
 	return shim.Success(iBytes)
 }
 
+type addKeyRequest struct {
+	Username string `json:"username"`
+	For string `json:"for"`
+	Key string `json:"key"`
+}
+
+type addKeyResponse struct {
+	For string `json:"for"`
+	Key string `json:"key"`
+}
+
+func (t *DewalletChaincode) AddKey(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	logger.Info("Adding decryption key of user data")
+
+	var r addKeyRequest
+	json.Unmarshal([]byte(args[0]), &r)
+
+	iBytes, err := stub.GetState(r.Username)
+	if err != nil {
+		return shim.Error("Failed to get state")
+	}
+	if iBytes == nil {
+		return shim.Error("Username not found")
+	}
+
+	key := Key{
+		For: r.For,
+		Key: r.Key,
+	}
+
+	var i Identity
+	json.Unmarshal([]byte(iBytes), &i)
+	i.Keys = append(i.Keys, key)
+	iBytes, _ = json.Marshal(i)
+
+	err = stub.PutState(i.Username, iBytes)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	res := addKeyResponse{
+		For: r.For,
+		Key: r.Key,
+	}
+
+	resBytes, _ := json.Marshal(res)
+
+	return shim.Success(resBytes)
+}
+
 type getPublicKeyRequest struct {
 	Username string `json:"username"`
 }
@@ -149,10 +207,12 @@ func (t *DewalletChaincode) GetPublicKey(stub shim.ChaincodeStubInterface, args 
 
 type getUserDataRequest struct {
 	Username string `json:"username"`
+	For string `json:"for"`
 }
 
 type getUserDataResponse struct {
 	Data string `json:"data"`
+	Key string `json:"key"`
 }
 
 // GetUserData will query the blockchain
@@ -174,8 +234,17 @@ func (t *DewalletChaincode) GetUserData(stub shim.ChaincodeStubInterface, args [
 	var i Identity
 	json.Unmarshal([]byte(iBytes), &i)
 
+	var keyResult string
+
+	for _, key := range i.Keys {
+		if key.For == req.For {
+			keyResult = key.Key
+		}
+	}
+
 	res := getUserDataResponse{
 		Data: i.Data,
+		Key: keyResult,
 	}
 
 	resBytes, _ := json.Marshal(res)
