@@ -28,7 +28,7 @@ type Identity struct {
 // Key save the association between allowed user's username
 // and encrypted key that can be used to decrypt the user data
 type Key struct {
-	For string `json:"for"`
+	Owner string `json:"for"`
 	Key string `json:"key"`
 }
 
@@ -127,12 +127,12 @@ func (t *DewalletChaincode) UpdateUserData(stub shim.ChaincodeStubInterface, arg
 
 type addKeyRequest struct {
 	Username string `json:"username"`
-	For string `json:"for"`
+	Owner string `json:"owner"`
 	Key string `json:"key"`
 }
 
 type addKeyResponse struct {
-	For string `json:"for"`
+	Owner string `json:"owner"`
 	Key string `json:"key"`
 }
 
@@ -152,7 +152,7 @@ func (t *DewalletChaincode) AddKey(stub shim.ChaincodeStubInterface, args []stri
 	}
 
 	key := Key{
-		For: r.For,
+		Owner: r.Owner,
 		Key: r.Key,
 	}
 
@@ -167,7 +167,7 @@ func (t *DewalletChaincode) AddKey(stub shim.ChaincodeStubInterface, args []stri
 	}
 
 	res := addKeyResponse{
-		For: r.For,
+		Owner: r.Owner,
 		Key: r.Key,
 	}
 
@@ -214,7 +214,7 @@ func (t *DewalletChaincode) GetPublicKey(stub shim.ChaincodeStubInterface, args 
 
 type getUserDataRequest struct {
 	Username string `json:"username"`
-	For string `json:"for"`
+	Owner string `json:"owner"`
 }
 
 type getUserDataResponse struct {
@@ -244,7 +244,7 @@ func (t *DewalletChaincode) GetUserData(stub shim.ChaincodeStubInterface, args [
 	var keyResult string
 
 	for _, key := range i.Keys {
-		if key.For == req.For {
+		if key.Owner == req.Owner {
 			keyResult = key.Key
 		}
 	}
