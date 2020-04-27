@@ -41,6 +41,10 @@ func (t *DewalletChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response
 		return t.Register(stub, args)
 	}
 
+	if function == "UpdateUserData" {
+		return t.UpdateUserData(stub, args)
+	}
+
 	if function == "GetPublicKey" {
 		// queries an entity state
 		return t.GetPublicKey(stub, args)
@@ -63,6 +67,43 @@ func (t *DewalletChaincode) Register(stub shim.ChaincodeStubInterface, args []st
 
 	iBytes, _ := json.Marshal(i)
 	err := stub.PutState(i.Username, iBytes)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	return shim.Success(iBytes)
+}
+
+type updateUserDataRequest struct {
+	Username string `json:"username"`
+	Data string `json:"data"`
+}
+
+type updateUserDataResponse struct {
+	Data string `json:"data"`
+}
+
+// UpdateUserData will query the blockchain
+// and update the encrypted data
+func (t *DewalletChaincode) UpdateUserData(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	logger.Info("Updating data of user")
+
+	var r updateUserDataRequest
+	json.Unmarshal([]byte(args[0]), &r)
+
+	iBytes, err := stub.GetState(r.Username)
+	if err != nil {
+		return shim.Error("Failed to get state")
+	}
+	if iBytes == nil {
+		return shim.Error("Username not found")
+	}
+
+	var i Identity
+	json.Unmarshal([]byte(iBytes), &i)
+	i.Data = r.Data
+
+	err = stub.PutState(i.Username, iBytes)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
