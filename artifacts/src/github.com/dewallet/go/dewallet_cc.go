@@ -18,18 +18,19 @@ type DewalletChaincode struct {
 // Data is an encrypted data of the user
 // Data can only be decrypted by user private key
 type Identity struct {
-	Username  string `json:"username"`
-	PublicKey string `json:"publicKey"`
-	Data      string `json:"data"`
-	Verified  string `json:"verified"`
-	Keys []Key `json:"keys"`
+	Username   string `json:"username"`
+	PublicKey  string `json:"publicKey"`
+	EPublicKey string `json:"ePublicKey"`
+	Data       string `json:"data"`
+	Verified   string `json:"verified"`
+	Keys       []Key  `json:"keys"`
 }
 
 // Key save the association between allowed user's username
 // and encrypted key that can be used to decrypt the user data
 type Key struct {
 	Owner string `json:"for"`
-	Key string `json:"key"`
+	Key   string `json:"key"`
 }
 
 // Init will initialize the chaincode
@@ -90,7 +91,7 @@ func (t *DewalletChaincode) Register(stub shim.ChaincodeStubInterface, args []st
 
 type updateUserDataRequest struct {
 	Username string `json:"username"`
-	Data string `json:"data"`
+	Data     string `json:"data"`
 }
 
 type updateUserDataResponse struct {
@@ -127,13 +128,13 @@ func (t *DewalletChaincode) UpdateUserData(stub shim.ChaincodeStubInterface, arg
 
 type addKeyRequest struct {
 	Username string `json:"username"`
-	Owner string `json:"owner"`
-	Key string `json:"key"`
+	Owner    string `json:"owner"`
+	Key      string `json:"key"`
 }
 
 type addKeyResponse struct {
 	Owner string `json:"owner"`
-	Key string `json:"key"`
+	Key   string `json:"key"`
 }
 
 // AddKey will add symetric key to blockchain
@@ -153,7 +154,7 @@ func (t *DewalletChaincode) AddKey(stub shim.ChaincodeStubInterface, args []stri
 
 	key := Key{
 		Owner: r.Owner,
-		Key: r.Key,
+		Key:   r.Key,
 	}
 
 	var i Identity
@@ -168,7 +169,7 @@ func (t *DewalletChaincode) AddKey(stub shim.ChaincodeStubInterface, args []stri
 
 	res := addKeyResponse{
 		Owner: r.Owner,
-		Key: r.Key,
+		Key:   r.Key,
 	}
 
 	resBytes, _ := json.Marshal(res)
@@ -181,7 +182,8 @@ type getPublicKeyRequest struct {
 }
 
 type getPublicKeyResponse struct {
-	PublicKey string `json:"publicKey"`
+	PublicKey  string `json:"publicKey"`
+	EPublicKey string `json:"ePublicKey"`
 }
 
 // GetPublicKey will query the blockchain
@@ -204,7 +206,8 @@ func (t *DewalletChaincode) GetPublicKey(stub shim.ChaincodeStubInterface, args 
 	json.Unmarshal([]byte(iBytes), &i)
 
 	res := getPublicKeyResponse{
-		PublicKey: i.PublicKey,
+		PublicKey:  i.PublicKey,
+		EPublicKey: i.EPublicKey,
 	}
 
 	resBytes, _ := json.Marshal(res)
@@ -214,12 +217,12 @@ func (t *DewalletChaincode) GetPublicKey(stub shim.ChaincodeStubInterface, args 
 
 type getUserDataRequest struct {
 	Username string `json:"username"`
-	Owner string `json:"owner"`
+	Owner    string `json:"owner"`
 }
 
 type getUserDataResponse struct {
 	Data string `json:"data"`
-	Key string `json:"key"`
+	Key  string `json:"key"`
 }
 
 // GetUserData will query the blockchain
@@ -251,7 +254,7 @@ func (t *DewalletChaincode) GetUserData(stub shim.ChaincodeStubInterface, args [
 
 	res := getUserDataResponse{
 		Data: i.Data,
-		Key: keyResult,
+		Key:  keyResult,
 	}
 
 	resBytes, _ := json.Marshal(res)
