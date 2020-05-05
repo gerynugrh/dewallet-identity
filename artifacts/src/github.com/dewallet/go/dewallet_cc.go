@@ -118,6 +118,7 @@ func (t *DewalletChaincode) UpdateUserData(stub shim.ChaincodeStubInterface, arg
 	json.Unmarshal([]byte(iBytes), &i)
 	i.Data = r.Data
 
+	iBytes, _ := json.Marshal(i)
 	err = stub.PutState(i.Username, iBytes)
 	if err != nil {
 		return shim.Error(err.Error())
