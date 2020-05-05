@@ -80,7 +80,7 @@ func (t *DewalletChaincode) Register(stub shim.ChaincodeStubInterface, args []st
 
 	i.Keys = []Key{}
 
-	iBytes, _ = json.Marshal(i)
+	iBytes, _ := json.Marshal(i)
 	err := stub.PutState(i.Username, iBytes)
 	if err != nil {
 		return shim.Error(err.Error())
@@ -118,7 +118,7 @@ func (t *DewalletChaincode) UpdateUserData(stub shim.ChaincodeStubInterface, arg
 	json.Unmarshal([]byte(iBytes), &i)
 	i.Data = r.Data
 
-	iBytes, _ := json.Marshal(i)
+	iBytes, _ = json.Marshal(i)
 	err = stub.PutState(i.Username, iBytes)
 	if err != nil {
 		return shim.Error(err.Error())
