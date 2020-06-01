@@ -9,6 +9,7 @@ import (
 	"crypto/x509"
 	"crypto/rsa"
 	"crypto/sha256"
+	"errors"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	pb "github.com/hyperledger/fabric/protos/peer"
@@ -44,19 +45,19 @@ func (t *DewalletChaincode) VerifySignature(args []string, publicKey string) err
 	m := []byte(args[0])
 	s, err := hex.DecodeString(args[1])
 	if err != nil {
-		return err
+		return errors.New(fmt.Sprintf("Error in decoding signature %s", err))
 	}
 
 	pkBytes, err := base64.StdEncoding.DecodeString(publicKey)
 	pk, err := x509.ParsePKCS1PublicKey(pkBytes)
 	if err != nil {
-		return err
+		return errors.New(fmt.Sprintf("Error in parsing key %s %s", publicKey, err))
 	}
 
 	h := sha256.Sum256(m)
 	err = rsa.VerifyPKCS1v15(pk, crypto.SHA256, h[:], s)
 	if err != nil {
-		return err
+		return errors.New(fmt.Sprintf("Error in verifying signature %s", err))
 	}
 
 	return nil
