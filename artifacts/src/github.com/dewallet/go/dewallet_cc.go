@@ -9,6 +9,7 @@ import (
 	"crypto/x509"
 	"crypto/rsa"
 	"crypto/sha256"
+	"errors"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	pb "github.com/hyperledger/fabric/protos/peer"
@@ -44,19 +45,19 @@ func (t *DewalletChaincode) VerifySignature(args []string, publicKey string) err
 	m := []byte(args[0])
 	s, err := hex.DecodeString(args[1])
 	if err != nil {
-		return err
+		return errors.New("Unable to decode hex")
 	}
 
 	pkBytes, err := base64.StdEncoding.DecodeString(publicKey)
 	pk, err := x509.ParsePKCS1PublicKey(pkBytes)
 	if err != nil {
-		return err
+		return errors.New("Unable to parse public key")
 	}
 
 	h := sha256.Sum256(m)
 	err = rsa.VerifyPKCS1v15(pk, crypto.SHA256, h[:], s)
 	if err != nil {
-		return err
+		return errors.New("Unable to verify signature")
 	}
 
 	return nil
@@ -148,7 +149,7 @@ func (t *DewalletChaincode) UpdateUserData(stub shim.ChaincodeStubInterface, arg
 
 	err = t.VerifySignature(args, i.SPublicKey)
 	if err != nil {
-		logger.Errorf("Can't verify signature %s", err)
+		logger.Errorf("Error %s", err)
 		return shim.Error("Can't verify signature")
 	}
 
@@ -200,7 +201,7 @@ func (t *DewalletChaincode) AddKey(stub shim.ChaincodeStubInterface, args []stri
 
 	err = t.VerifySignature(args, i.SPublicKey)
 	if err != nil {
-		logger.Errorf("Can't verify signature %s", err)
+		logger.Errorf("Error %s", err)
 		return shim.Error("Can't verify signature")
 	}
 
