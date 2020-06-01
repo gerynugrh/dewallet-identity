@@ -267,6 +267,7 @@ type getUserDataRequest struct {
 type getUserDataResponse struct {
 	PublicKey  string `json:"publicKey"`
 	EPublicKey string `json:"ePublicKey"`
+	SPublicKey string `json:"sPublicKey"`
 	Data string `json:"data"`
 	Key  string `json:"key"`
 }
@@ -301,6 +302,7 @@ func (t *DewalletChaincode) GetUserData(stub shim.ChaincodeStubInterface, args [
 	res := getUserDataResponse{
 		PublicKey: i.PublicKey,
 		EPublicKey: i.EPublicKey,
+		SPublicKey: i.SPublicKey,
 		Data: i.Data,
 		Key:  keyResult,
 	}
