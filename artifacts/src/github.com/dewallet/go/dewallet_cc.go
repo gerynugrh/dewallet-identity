@@ -49,18 +49,24 @@ func (t *DewalletChaincode) VerifySignature(args []string, publicKey string) err
 	}
 
 	pkBytes, err := base64.StdEncoding.DecodeString(publicKey)
-	pk, err := x509.ParsePKCS1PublicKey(pkBytes)
+	pk, err := x509.ParsePKIXPublicKey(pkBytes)
 	if err != nil {
 		return errors.New(fmt.Sprintf("Error in parsing key %s %s", publicKey, err))
 	}
 
-	h := sha256.Sum256(m)
-	err = rsa.VerifyPKCS1v15(pk, crypto.SHA256, h[:], s)
-	if err != nil {
-		return errors.New(fmt.Sprintf("Error in verifying signature %s", err))
-	}
+	switch pk := pk.(type) {
+		case *rsa.PublicKey:
+			h := sha256.Sum256(m)
+			err = rsa.VerifyPKCS1v15(pk, crypto.SHA256, h[:], s)
+			if err != nil {
+				return errors.New(fmt.Sprintf("Error in verifying signature %s", err))
+			}
 
-	return nil
+			return nil
+		default:
+			return errors.New(fmt.Sprintf("Key is not RSA"))
+	}
+	
 }
 
 // Init will initialize the chaincode
