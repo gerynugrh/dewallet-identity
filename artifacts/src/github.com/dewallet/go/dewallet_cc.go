@@ -21,6 +21,7 @@ type Identity struct {
 	Username   string `json:"username"`
 	PublicKey  string `json:"publicKey"`
 	EPublicKey string `json:"ePublicKey"`
+	SPublicKey string `json:"sPublicKey"`
 	Data       string `json:"data"`
 	Verified   string `json:"verified"`
 	Keys       []Key  `json:"keys"`
@@ -126,6 +127,7 @@ func (t *DewalletChaincode) UpdateUserData(stub shim.ChaincodeStubInterface, arg
 
 	return shim.Success(iBytes)
 }
+
 
 type addKeyRequest struct {
 	Username string `json:"username"`
