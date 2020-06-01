@@ -2,7 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"encoding/base64"
+	"encoding/hex"
 	"fmt"
+	"crypto"
+	"crypto/x509"
+	"crypto/rsa"
+	"crypto/sha256"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	pb "github.com/hyperledger/fabric/protos/peer"
@@ -32,6 +38,28 @@ type Identity struct {
 type Key struct {
 	Owner string `json:"for"`
 	Key   string `json:"key"`
+}
+
+func (t *DewalletChaincode) VerifySignature(args []string, publicKey string) error {
+	m := []byte(args[0])
+	s, err := hex.DecodeString(args[1])
+	if err != nil {
+		return err
+	}
+
+	pkBytes, err := base64.StdEncoding.DecodeString(publicKey)
+	pk, err := x509.ParsePKCS1PublicKey(pkBytes)
+	if err != nil {
+		return err
+	}
+
+	h := sha256.Sum256(m)
+	err = rsa.VerifyPKCS1v15(pk, crypto.SHA256, h[:], s)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Init will initialize the chaincode
@@ -117,6 +145,13 @@ func (t *DewalletChaincode) UpdateUserData(stub shim.ChaincodeStubInterface, arg
 
 	var i Identity
 	json.Unmarshal([]byte(iBytes), &i)
+
+	err = t.VerifySignature(args, i.SPublicKey)
+	if err != nil {
+		logger.Errorf("Can't verify signature %s", err)
+		return shim.Error("Can't verify signature")
+	}
+
 	i.Data = r.Data
 
 	iBytes, _ = json.Marshal(i)
@@ -162,6 +197,13 @@ func (t *DewalletChaincode) AddKey(stub shim.ChaincodeStubInterface, args []stri
 
 	var i Identity
 	json.Unmarshal([]byte(iBytes), &i)
+
+	err = t.VerifySignature(args, i.SPublicKey)
+	if err != nil {
+		logger.Errorf("Can't verify signature %s", err)
+		return shim.Error("Can't verify signature")
+	}
+
 	i.Keys = append(i.Keys, key)
 	iBytes, _ = json.Marshal(i)
 
@@ -268,6 +310,7 @@ func (t *DewalletChaincode) GetUserData(stub shim.ChaincodeStubInterface, args [
 
 	return shim.Success(resBytes)
 }
+
 
 func main() {
 	err := shim.Start(new(DewalletChaincode))
